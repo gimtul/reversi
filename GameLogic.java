@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class GameLogic implements PlayableLogic {
@@ -13,12 +15,13 @@ public class GameLogic implements PlayableLogic {
 
     @Override
     public int getBoardSize() {
-        return 0;
+        return 8;
     }
 
     @Override
     public List<Position> ValidMoves() {
-        return null;
+        List<Position> positions = List.of(new Position(1, 1));
+        return positions;
     }
 
     @Override
