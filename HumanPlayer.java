@@ -7,4 +7,8 @@ public class HumanPlayer extends Player {
     boolean isHuman() {//is player 1
         return true;
     }
+
+    public Move makeMove(PlayableLogic gameStatus) {
+        return null;
+    }
 }

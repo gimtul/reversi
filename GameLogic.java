@@ -10,7 +10,7 @@ public class GameLogic implements PlayableLogic {
 
     @Override
     public boolean locate_disc(Position a, Disc disc) {
-        return false;
+        return true;
     }
 
     @Override
@@ -25,7 +25,8 @@ public class GameLogic implements PlayableLogic {
 
     @Override
     public List<Position> ValidMoves() {
-        List<Position> positions = List.of(new Position(1, 1));
+        List<Position> positions = List.of(new Position(1, 1), new Position(3, 3),
+                new Position(3, 4),new Position(4, 3),new Position(4, 4));
         return positions;
     }
 
@@ -62,7 +63,6 @@ public class GameLogic implements PlayableLogic {
 
     @Override
     public void reset() {
-
     }
 
     @Override
