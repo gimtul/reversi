@@ -76,6 +76,7 @@ public class GameLogic implements PlayableLogic {
 
     @Override
     public void reset() {
+
     }
 
     @Override
