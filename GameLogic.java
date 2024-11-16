@@ -85,6 +85,7 @@ public class GameLogic implements PlayableLogic {
         DiscBoard[4][4]= new SimpleDisc(player1);
         DiscBoard[3][3]= new SimpleDisc(player1);
         DiscBoard[4][3]= new SimpleDisc(player2);
+
     }
 
     @Override
