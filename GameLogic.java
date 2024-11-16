@@ -4,18 +4,24 @@ import java.util.List;
 
 public class GameLogic implements PlayableLogic {
 
-    private Player player1;
 
-    private Player player2;
+    private Player player1, player2;
+    private final int BoardSize = getBoardSize();
+    private Disc[][] DiscBoard = new Disc[BoardSize][BoardSize];
+
+    public GameLogic() {
+        super();
+    }
 
     @Override
     public boolean locate_disc(Position a, Disc disc) {
+        this.DiscBoard[a.row()][a.col()] = disc;
         return true;
     }
 
     @Override
     public Disc getDiscAtPosition(Position position) {
-        return null;
+        return this.DiscBoard[position.col()][position.row()];
     }
 
     @Override
@@ -25,8 +31,15 @@ public class GameLogic implements PlayableLogic {
 
     @Override
     public List<Position> ValidMoves() {
-        List<Position> positions = List.of(new Position(1, 1), new Position(3, 3),
-                new Position(3, 4),new Position(4, 3),new Position(4, 4));
+//        List<Position> positions = List.of(new Position(1, 1), new Position(3, 3),
+//                new Position(3, 4),new Position(4, 3),new Position(4, 4));
+        List<Position> positions = new ArrayList<>();
+        for (int row = 0; row < BoardSize; row++) {
+            for (int col = 0; col < BoardSize; col++) {
+                if (DiscBoard[row][col] == null)
+                    positions.add(new Position(row, col));
+            }
+        }
         return positions;
     }
 
