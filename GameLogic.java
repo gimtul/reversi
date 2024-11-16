@@ -76,6 +76,15 @@ public class GameLogic implements PlayableLogic {
 
     @Override
     public void reset() {
+        for (int row = 0; row < BoardSize; row++) {
+            for (int col = 0; col < BoardSize; col++) {
+                DiscBoard[row][col] = null;
+            }
+        }
+        DiscBoard[3][4]= new SimpleDisc(player2);
+        DiscBoard[4][4]= new SimpleDisc(player1);
+        DiscBoard[3][3]= new SimpleDisc(player1);
+        DiscBoard[4][3]= new SimpleDisc(player2);
     }
 
     @Override
