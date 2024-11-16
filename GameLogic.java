@@ -4,7 +4,7 @@ import java.util.List;
 
 public class GameLogic implements PlayableLogic {
 
-
+    private boolean isFirstPlayerTurn;
     private Player player1, player2;
     private final int BoardSize = getBoardSize();
     private Disc[][] DiscBoard = new Disc[BoardSize][BoardSize];
@@ -15,7 +15,10 @@ public class GameLogic implements PlayableLogic {
 
     @Override
     public boolean locate_disc(Position a, Disc disc) {
-        this.DiscBoard[a.row()][a.col()] = disc;
+        if (this.DiscBoard[a.col()][a.row()] != null)
+            return false;
+        this.DiscBoard[a.col()][a.row()] = disc;
+        this.isFirstPlayerTurn = !this.isFirstPlayerTurn;
         return true;
     }
 
@@ -36,7 +39,7 @@ public class GameLogic implements PlayableLogic {
         List<Position> positions = new ArrayList<>();
         for (int row = 0; row < BoardSize; row++) {
             for (int col = 0; col < BoardSize; col++) {
-                if (DiscBoard[row][col] == null)
+                if (DiscBoard[col][row] == null)
                     positions.add(new Position(row, col));
             }
         }
@@ -66,7 +69,7 @@ public class GameLogic implements PlayableLogic {
 
     @Override
     public boolean isFirstPlayerTurn() {
-        return true;
+        return isFirstPlayerTurn;
     }
 
     @Override
@@ -86,6 +89,7 @@ public class GameLogic implements PlayableLogic {
         DiscBoard[3][3]= new SimpleDisc(player1);
         DiscBoard[4][3]= new SimpleDisc(player2);
 
+        isFirstPlayerTurn = true;
     }
 
     @Override
