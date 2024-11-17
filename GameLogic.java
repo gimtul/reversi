@@ -77,6 +77,15 @@ public class GameLogic implements PlayableLogic {
         return false;
     }
 
+    public void __init__ () {
+        DiscBoard[3][4]= new SimpleDisc(player2);
+        DiscBoard[4][4]= new SimpleDisc(player1);
+        DiscBoard[3][3]= new SimpleDisc(player1);
+        DiscBoard[4][3]= new SimpleDisc(player2);
+
+        isFirstPlayerTurn = true;
+    }
+
     @Override
     public void reset() {
         for (int row = 0; row < BoardSize; row++) {
@@ -84,12 +93,9 @@ public class GameLogic implements PlayableLogic {
                 DiscBoard[row][col] = null;
             }
         }
-        DiscBoard[3][4]= new SimpleDisc(player2);
-        DiscBoard[4][4]= new SimpleDisc(player1);
-        DiscBoard[3][3]= new SimpleDisc(player1);
-        DiscBoard[4][3]= new SimpleDisc(player2);
 
-        isFirstPlayerTurn = true;
+        __init__();
+
     }
 
     @Override
