@@ -39,15 +39,28 @@ public class GameLogic implements PlayableLogic {
         List<Position> positions = new ArrayList<>();
         for (int row = 0; row < BoardSize; row++) {
             for (int col = 0; col < BoardSize; col++) {
-                if (DiscBoard[col][row] == null)
+                if (DiscBoard[col][row] == null && countFlips(new Position(col, row)) >= 0) //very if flips
                     positions.add(new Position(row, col));
             }
         }
         return positions;
     }
 
+    public boolean isBorder(Position a) {
+        if (a.row() == 0 || a.row() == 7 || a.col() == 0 || a.col() == 7)
+            return true;
+        return false;
+    }
+
     @Override
     public int countFlips(Position a) {
+//        if () {
+//
+//        }
+        return 0;
+    }
+
+    public int countFlipsRec(Position a) {
         return 0;
     }
 
