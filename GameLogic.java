@@ -52,17 +52,45 @@ public class GameLogic implements PlayableLogic {
         return false;
     }
 
+    public boolean outOfBound(Position a) {
+        if (a.row() == -1 || a.row() == 8 || a.col() == -1 || a.col() == 8)
+            return true;
+        return false;
+    }
+
     @Override
     public int countFlips(Position a) {
-//        if () {
-//
-//        }
+        List<Position> toFlipList = new ArrayList<>();
+        int row = a.row(), col = a.col();
+        if (!outOfBound(new Position(row+1, col)) && DiscBoard[row][col] != null) {
+            if (DiscBoard[row + 1][col].getOwner() != DiscBoard[row][col].getOwner() && DiscBoard[row + 1][col].getOwner() != null) {
+                toFlipList.add(new Position(row + 1, col));
+                //return countFlipsRec(new Position(row + 1, col), 1, 0, DiscBoard[row][col].getOwner());
+            }
+        }
         return 0;
     }
 
-    public int countFlipsRec(Position a) {
-        return 0;
+//    public int countFlipsRec(Position a, int r, int c, Player p) {
+//        int row = a.row(), col = a.col();
+//        if (DiscBoard[row+r][col+c].getOwner() != DiscBoard[row][col].getOwner())
+//            return countFlipsRec(a, r, c, p);
+//        if (doesItFlip(a, r, c, p)) {
+//
+//        }
+//        return 0;
+//    }
+
+    public boolean doesItFlip(Position a, int r, int c, Player p) {
+        if (DiscBoard[a.row()][a.col()].getOwner() != p)
+            return true;
+        if (DiscBoard[a.row()][a.col()].getOwner() == p || DiscBoard[a.row()][a.col()] == null)
+            return false;
+        if (outOfBound(new Position(a.row()+r, a.col()+c)))
+            return false;
+        return doesItFlip(new Position(a.row()+r, a.col()+c), r, c, p);
     }
+
 
     @Override
     public Player getFirstPlayer() {

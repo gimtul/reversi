@@ -1,6 +1,7 @@
 public class SimpleDisc implements Disc {
 
     private Player player;
+    private boolean wasFlipped = false;
 
     public SimpleDisc(Player currentPlayer) {
         this.player = currentPlayer;
@@ -20,4 +21,13 @@ public class SimpleDisc implements Disc {
     public String getType() {
         return "⬤";
     }
+
+    public boolean getFlipped() {
+        return this.wasFlipped;
+    }
+
+    public void setFlipped() {
+        this.wasFlipped = true;
+    }
+
 }
