@@ -5,24 +5,36 @@ import java.util.Stack;
 
 public class GameLogic implements PlayableLogic {
     private Stack<Disc[][]> gameHistory = new Stack<>();
+    private Stack<List<Position>> flipPositionsHistory = new Stack<>();
     private boolean isFirstPlayerTurn = true;
     private Player player1, player2;
     private final int BoardSize = getBoardSize();
     private Disc[][] DiscBoard = new Disc[BoardSize][BoardSize];
+    private List<Position> flipPositions;
 
     public GameLogic() {
         super();
     }
-    private void saveGameState() {
-        gameHistory.push(this.DiscBoard);
+    private void saveGameState(Disc[][] discBoard, List<Position> flipPositions) {
+        this.gameHistory.push(getDiscBoard(discBoard));
+        this.flipPositionsHistory.push(flipPositions);
     }
 
     @Override
     public boolean locate_disc(Position a, Disc disc) {
         if (this.DiscBoard[a.row()][a.col()] != null || countFlips(a) < 1)
             return false;
-        this.gameHistory.push(getDiscBoard());
+        if (a.row() == 5 && a.col() == 3)
+            System.out.println("this");
+
+        saveGameState(getDiscBoard(this.DiscBoard), this.flipPositions);
+
         this.DiscBoard[a.row()][a.col()] = disc;
+
+        for (Position pos : this.flipPositions) {
+            this.DiscBoard[pos.row()][pos.col()].setOwner(getCurrentPlayer());
+        }
+
         this.isFirstPlayerTurn = !this.isFirstPlayerTurn;
         return true;
     }
@@ -53,8 +65,7 @@ public class GameLogic implements PlayableLogic {
 
     @Override
     public int countFlips(Position a) {
-        //boolean[][] toFlip = new
-
+        this.flipPositions = new ArrayList<>();
         int count = 0;
 
         if (a.row() == 4 && a.col() == 2)
@@ -71,47 +82,42 @@ public class GameLogic implements PlayableLogic {
             p = this.player2;
 
         if (doesItFlip(a, 0, -1, p))
-            count += Flips(a, 0, -1, p).size();
+            Flips(a, 0, -1, p);
         if (doesItFlip(a, -1, -1, p))
-            count += Flips(a, -1, -1, p).size();
+            Flips(a, -1, -1, p);
         if (doesItFlip(a, -1, 0, p))
-            count += Flips(a, -1, 0, p).size();
+            Flips(a, -1, 0, p);
         if (doesItFlip(a, -1, 1, p))
-            count += Flips(a, -1, 1, p).size();
-        if (doesItFlip(a, 0, 1, p)) //////////
-            count += Flips(a, 0, 1, p).size();
+            Flips(a, -1, 1, p);
+        if (doesItFlip(a, 0, 1, p))
+            Flips(a, 0, 1, p);
         if (doesItFlip(a, 1, 1, p))
-            count += Flips(a, 1, 1, p).size();
+            Flips(a, 1, 1, p);
         if (doesItFlip(a, 1, 0, p))
-            count += Flips(a, 1, 0, p).size();
+            Flips(a, 1, 0, p);
         if (doesItFlip(a, 1, -1, p))
-            count += Flips(a, 1, -1, p).size();
+            Flips(a, 1, -1, p);
+
+        count += flipPositions.size();
 
         return count;
     }
 
     public List<Position> Flips(Position a, int r, int c, Player p) {
-        System.out.println(a.row() + ", " + a.col() + " flips");
-        List<Position> flipPositions = new ArrayList<>();
         int count = 1;
 
         while (DiscBoard[a.row() + count*r][a.col() + count*c].getOwner() != p) {
-            flipPositions.add(new Position(a.row() + count*r, a.col() + count*c));
+            this.flipPositions.add(new Position(a.row() + count*r, a.col() + count*c));
             count++;
         }
-        return flipPositions;
+
+        return this.flipPositions;
     }
 
     public boolean doesItFlip(Position a, int r, int c, Player p) {
-//        if (DiscBoard[a.row()][a.col()] != null)
-//            System.out.println(DiscBoard[a.row()][a.col()] + " here!");
         int row = a.row() + r, col = a.col() + c;
         if (outOfBound(new Position(row, col)))
             return false;
-//        System.out.println(DiscBoard[3][4] + "here!");
-//        System.out.println(DiscBoard[4][4] + "here!");
-//        System.out.println(DiscBoard[3][3] + "here!");
-//        System.out.println(DiscBoard[4][3] + "here!");
         if (DiscBoard[row][col] == null)
             return false;
         if (DiscBoard[row][col].getOwner() == p)
@@ -178,18 +184,27 @@ public class GameLogic implements PlayableLogic {
 
     @Override
     public void undoLastMove() {
-        if (!gameHistory.isEmpty()) {
-            this.DiscBoard = gameHistory.pop();
+        if (!this.gameHistory.isEmpty()) {
+            //Disc[][] copyBoard = this.gameHistory.pop();
+//            for (int i=0;i<BoardSize;i++){
+//                for(int j=0;j<BoardSize;j++){
+//                    this.DiscBoard[i][j] = copyBoard[i][j];
+//                }
+//            }
+            this.DiscBoard = this.gameHistory.pop();
+            for (Position pos : this.flipPositionsHistory.pop()) {
+                this.DiscBoard[pos.row()][pos.col()].setOwner(getCurrentPlayer());
+            }
             this.isFirstPlayerTurn = !this.isFirstPlayerTurn;
         } else {
             System.out.println("No moves to undo.");
         }
     }
-    public Disc[][] getDiscBoard() {
-        Disc[][] copyBoard=new Disc[BoardSize][BoardSize];
-        for (int i=0;i<BoardSize;i++){
-            for(int j=0;j<BoardSize;j++){
-                copyBoard[i][j]=this.DiscBoard[i][j];
+    public Disc[][] getDiscBoard(Disc[][] discBoard) {
+        Disc[][] copyBoard = new Disc[BoardSize][BoardSize];
+        for (int row = 0; row <BoardSize; row++){
+            for(int col = 0; col < BoardSize; col++){
+                copyBoard[row][col] = discBoard[row][col];
             }
         }
         return copyBoard;
