@@ -158,6 +158,14 @@ public class GameLogic implements PlayableLogic {
 
     @Override
     public boolean isGameFinished() {
+        List<Position> pos= ValidMoves();
+        if (pos.isEmpty()){
+            if (isFirstPlayerTurn)
+                System.out.println("player 2 has won");
+            else
+                System.out.println(("player 1 has won"));
+            return  true;
+        }
         return false;
     }
 
@@ -185,12 +193,6 @@ public class GameLogic implements PlayableLogic {
     @Override
     public void undoLastMove() {
         if (!this.gameHistory.isEmpty()) {
-            //Disc[][] copyBoard = this.gameHistory.pop();
-//            for (int i=0;i<BoardSize;i++){
-//                for(int j=0;j<BoardSize;j++){
-//                    this.DiscBoard[i][j] = copyBoard[i][j];
-//                }
-//            }
             this.DiscBoard = this.gameHistory.pop();
             for (Position pos : this.flipPositionsHistory.pop()) {
                 this.DiscBoard[pos.row()][pos.col()].setOwner(getCurrentPlayer());
