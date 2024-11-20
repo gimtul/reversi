@@ -66,6 +66,9 @@ public class GameLogic implements PlayableLogic {
         else
             p = getSecondPlayer();
 
+        if (a.row() == 4 && a.col() == 3)
+            System.out.println("this");
+
         if (doesItFlip(a, 0, -1, p))
             return Flips(a, 0, -1, p).size();
         if (doesItFlip(a, -1, -1, p))
