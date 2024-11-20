@@ -1,9 +1,10 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
 
 public class GameLogic implements PlayableLogic {
-
+    private Stack<Disc[][]> gameHistory = new Stack<>();
     private boolean isFirstPlayerTurn = true;
     private Player player1, player2;
     private final int BoardSize = getBoardSize();
@@ -12,19 +13,18 @@ public class GameLogic implements PlayableLogic {
     public GameLogic() {
         super();
     }
+    private void saveGameState() {
+        gameHistory.push(this.DiscBoard);
+    }
 
     @Override
     public boolean locate_disc(Position a, Disc disc) {
         if (this.DiscBoard[a.row()][a.col()] != null || countFlips(a) < 1)
             return false;
+        this.gameHistory.push(getDiscBoard());
         this.DiscBoard[a.row()][a.col()] = disc;
         this.isFirstPlayerTurn = !this.isFirstPlayerTurn;
         return true;
-    }
-
-    @Override
-    public Disc getDiscAtPosition(Position position) {
-        return this.DiscBoard[position.row()][position.col()];
     }
 
     @Override
@@ -116,7 +116,10 @@ public class GameLogic implements PlayableLogic {
             return true;
         return doesItFlip(new Position(row, col), r, c, p);
     }
-
+    @Override
+    public Disc getDiscAtPosition(Position position) {
+        return this.DiscBoard[position.col()][position.row()];
+    }
 
     @Override
     public Player getFirstPlayer() {
@@ -173,7 +176,22 @@ public class GameLogic implements PlayableLogic {
 
     @Override
     public void undoLastMove() {
-
+        if (!gameHistory.isEmpty()) {
+            this.DiscBoard = gameHistory.pop();
+            this.isFirstPlayerTurn = !this.isFirstPlayerTurn;
+        } else {
+            System.out.println("No moves to undo.");
+        }
     }
+    public Disc[][] getDiscBoard() {
+        Disc[][] copyBoard=new Disc[BoardSize][BoardSize];
+        for (int i=0;i<BoardSize;i++){
+            for(int j=0;j<BoardSize;j++){
+                copyBoard[i][j]=this.DiscBoard[i][j];
+            }
+        }
+        return copyBoard;
+    }
+
 
 }

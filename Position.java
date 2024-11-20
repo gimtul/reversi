@@ -16,8 +16,6 @@ public class Position {
         return this.col;
     }
 
-    public String toString() {
-        return STR."\{this.row}, \{this.col}";
-    }
+
 
 }
