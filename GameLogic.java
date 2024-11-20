@@ -45,12 +45,6 @@ public class GameLogic implements PlayableLogic {
         return positions;
     }
 
-    public boolean isBorder(Position a) {
-        if (a.row() == 0 || a.row() == 7 || a.col() == 0 || a.col() == 7)
-            return true;
-        return false;
-    }
-
     public boolean outOfBound(Position a) {
         if (a.row() == -1 || a.row() == 8 || a.col() == -1 || a.col() == 8)
             return true;
@@ -60,36 +54,44 @@ public class GameLogic implements PlayableLogic {
     @Override
     public int countFlips(Position a) {
         //boolean[][] toFlip = new
-        Player p;
-        if (isFirstPlayerTurn())
-            p = getFirstPlayer();
-        else
-            p = getSecondPlayer();
 
-        if (a.row() == 4 && a.col() == 3)
+        int count = 0;
+
+        if (a.row() == 4 && a.col() == 2)
+            System.out.println("this");
+        if (a.row() == 2 && a.col() == 3)
+            System.out.println("this");
+        if (a.row() == 2 && a.col() == 4)
             System.out.println("this");
 
-        if (doesItFlip(a, 0, -1, p))
-            return Flips(a, 0, -1, p).size();
-        if (doesItFlip(a, -1, -1, p))
-            return Flips(a, -1, -1, p).size();
-        if (doesItFlip(a, -1, 0, p))
-            return Flips(a, -1, 0, p).size();
-        if (doesItFlip(a, -1, 1, p))
-            return Flips(a, -1, 1, p).size();
-        if (doesItFlip(a, 0, 1, p)) //////////
-            return Flips(a, 0, 1, p).size();
-        if (doesItFlip(a, 1, 1, p))
-            return Flips(a, 1, 1, p).size();
-        if (doesItFlip(a, 1, 0, p))
-            return Flips(a, 1, 0, p).size();
-        if (doesItFlip(a, 1, -1, p))
-            return Flips(a, 1, -1, p).size();
+        Player p;
+        if (isFirstPlayerTurn())
+            p = this.player1;
+        else
+            p = this.player2;
 
-        return 0;
+        if (doesItFlip(a, 0, -1, p))
+            count += Flips(a, 0, -1, p).size();
+        if (doesItFlip(a, -1, -1, p))
+            count += Flips(a, -1, -1, p).size();
+        if (doesItFlip(a, -1, 0, p))
+            count += Flips(a, -1, 0, p).size();
+        if (doesItFlip(a, -1, 1, p))
+            count += Flips(a, -1, 1, p).size();
+        if (doesItFlip(a, 0, 1, p)) //////////
+            count += Flips(a, 0, 1, p).size();
+        if (doesItFlip(a, 1, 1, p))
+            count += Flips(a, 1, 1, p).size();
+        if (doesItFlip(a, 1, 0, p))
+            count += Flips(a, 1, 0, p).size();
+        if (doesItFlip(a, 1, -1, p))
+            count += Flips(a, 1, -1, p).size();
+
+        return count;
     }
 
     public List<Position> Flips(Position a, int r, int c, Player p) {
+        System.out.println(a.row() + ", " + a.col() + " flips");
         List<Position> flipPositions = new ArrayList<>();
         int count = 1;
 
@@ -101,8 +103,8 @@ public class GameLogic implements PlayableLogic {
     }
 
     public boolean doesItFlip(Position a, int r, int c, Player p) {
-        if (DiscBoard[a.row()][a.col()] != null)
-            System.out.println(DiscBoard[a.row()][a.col()] + " here!");
+//        if (DiscBoard[a.row()][a.col()] != null)
+//            System.out.println(DiscBoard[a.row()][a.col()] + " here!");
         int row = a.row() + r, col = a.col() + c;
         if (outOfBound(new Position(row, col)))
             return false;
@@ -118,7 +120,7 @@ public class GameLogic implements PlayableLogic {
     }
     @Override
     public Disc getDiscAtPosition(Position position) {
-        return this.DiscBoard[position.col()][position.row()];
+        return this.DiscBoard[position.row()][position.col()];
     }
 
     @Override
