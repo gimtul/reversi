@@ -21,6 +21,7 @@ public abstract class Player {
         return isPlayerOne;
     }
 
+
     /**
      * Retrieves the number of wins accumulated by this player over the course of the game.
      *
