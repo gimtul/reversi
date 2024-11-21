@@ -94,11 +94,13 @@ public class GameLogic implements PlayableLogic {
     }
 
     public List<Position> Flips(Position a, int r, int c, Player p) {
-        int count = 1;
+        int count = 1, row, col;
 
         while (DiscBoard[a.row() + count*r][a.col() + count*c].getOwner() != p) {
-            //if (!getDiscAtPosition(new Position(a.row() + count*r, a.col() + count*c)).getType().equals("⭕"))
-            this.flipPositions.add(new Position(a.row() + count*r, a.col() + count*c));
+            row = a.row() + count*r;
+            col = a.col() + count*c;
+            //if (!getDiscAtPosition(new Position(row, col)).getType().equals("⭕"))
+            this.flipPositions.add(new Position(row, col));
             count++;
         }
 
