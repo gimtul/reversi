@@ -15,6 +15,7 @@ public class GameLogic implements PlayableLogic {
     public GameLogic() {
         super();
     }
+
     private void saveGameState(Disc[][] discBoard, List<Position> flipPositions) {
         this.gameHistory.push(getDiscBoard(discBoard));
         this.flipPositionsHistory.push(flipPositions);
@@ -28,6 +29,11 @@ public class GameLogic implements PlayableLogic {
         saveGameState(getDiscBoard(this.DiscBoard), this.flipPositions);
 
         this.DiscBoard[a.row()][a.col()] = disc;
+
+        for (Position pos : this.bombPositions) {
+            if (!this.DiscBoard[pos.row()][pos.col()].getOwner().equals(getCurrentPlayer()))
+                bombFlips(pos);
+        }
 
         for (Position pos : this.flipPositions) {
             this.DiscBoard[pos.row()][pos.col()].setOwner(getCurrentPlayer());
@@ -113,9 +119,15 @@ public class GameLogic implements PlayableLogic {
     /**
      * not done
      **/
-//    public void bombFlips(Position a, Player p) {
-//        int count = 1, row, col;
-//
+    public void bombFlips(Position a) {
+        int row = a.row(), col = a.col();
+
+        Player p;
+        if (isFirstPlayerTurn())
+            p = this.player1;
+        else
+            p = this.player2;
+
 //        while (DiscBoard[a.row() + count*r][a.col() + count*c].getOwner() != p && DiscBoard[a.row() + count*r][a.col() + count*c].getType().equals("💣")) {
 //            row = a.row() + count*r;
 //            col = a.col() + count*c;
@@ -127,7 +139,39 @@ public class GameLogic implements PlayableLogic {
 //            }
 //            count++;
 //        }
-//    }
+
+        if (bombDoesItFlip(a, 0, -1, p))
+            flipPositions.add(new Position(row, col - 1));
+        if (bombDoesItFlip(a, -1, -1, p))
+            flipPositions.add(new Position(row - 1, col - 1));
+        if (bombDoesItFlip(a, -1, 0, p))
+            flipPositions.add(new Position(row - 1, col));
+        if (bombDoesItFlip(a, -1, 1, p))
+            flipPositions.add(new Position(row - 1, col + 1));
+        if (bombDoesItFlip(a, 0, 1, p))
+            flipPositions.add(new Position(row, col + 1));
+        if (bombDoesItFlip(a, 1, 1, p))
+            flipPositions.add(new Position(row + 1, col + 1));
+        if (bombDoesItFlip(a, 1, 0, p))
+            flipPositions.add(new Position(row + 1, col));
+        if (bombDoesItFlip(a, 1, -1, p))
+            flipPositions.add(new Position(row + 1, col - 1));
+    }
+
+    public boolean bombDoesItFlip(Position a, int r, int c, Player p) {
+        int row = a.row() + r, col = a.col() + c;
+        if (outOfBound(new Position(row, col)))
+            return false;
+        if (DiscBoard[row][col] == null)
+            return false;
+        if (DiscBoard[row][col].getType().equals("💣") && !DiscBoard[row][col].getOwner().equals(p)) {
+            bombFlips(new Position(row, col));
+            return true;
+        }
+        if (!DiscBoard[row][col].getOwner().equals(p))
+            return true;
+        return false;
+    }
 
     public boolean doesItFlip(Position a, int r, int c, Player p) {
         int row = a.row() + r, col = a.col() + c;
