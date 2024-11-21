@@ -97,7 +97,8 @@ public class GameLogic implements PlayableLogic {
         int count = 1;
 
         while (DiscBoard[a.row() + count*r][a.col() + count*c].getOwner() != p) {
-            this.flipPositions.add(new Position(a.row() + count*r, a.col() + count*c));
+            if (getDiscAtPosition(a).getType().equals("⭕"))
+                this.flipPositions.add(new Position(a.row() + count*r, a.col() + count*c));
             count++;
         }
 
