@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
@@ -11,6 +10,7 @@ public class GameLogic implements PlayableLogic {
     private final int BoardSize = getBoardSize();
     private Disc[][] DiscBoard = new Disc[BoardSize][BoardSize];
     private List<Position> flipPositions;
+    private List<Position> bombPositions;
 
     public GameLogic() {
         super();
@@ -63,6 +63,7 @@ public class GameLogic implements PlayableLogic {
     @Override
     public int countFlips(Position a) {
         this.flipPositions = new ArrayList<>();
+        this.bombPositions = new ArrayList<>();
         int count = 0;
 
         Player p;
@@ -93,7 +94,7 @@ public class GameLogic implements PlayableLogic {
         return count;
     }
 
-    public List<Position> Flips(Position a, int r, int c, Player p) {
+    public void Flips(Position a, int r, int c, Player p) {
         int count = 1, row, col;
 
         while (DiscBoard[a.row() + count*r][a.col() + count*c].getOwner() != p) {
@@ -101,11 +102,32 @@ public class GameLogic implements PlayableLogic {
             col = a.col() + count*c;
             if (!getDiscAtPosition(new Position(row, col)).getType().equals("⭕"))
                 this.flipPositions.add(new Position(row, col));
+            if (getDiscAtPosition(new Position(row, col)).getType().equals("💣")) {
+                this.bombPositions.add(new Position(row, col));
+                //bombFlips(new Position(row, col), p);
+            }
             count++;
         }
-
-        return this.flipPositions;
     }
+
+    /**
+     * not done
+     **/
+//    public void bombFlips(Position a, Player p) {
+//        int count = 1, row, col;
+//
+//        while (DiscBoard[a.row() + count*r][a.col() + count*c].getOwner() != p && DiscBoard[a.row() + count*r][a.col() + count*c].getType().equals("💣")) {
+//            row = a.row() + count*r;
+//            col = a.col() + count*c;
+//            if (getDiscAtPosition(new Position(row, col)).getType().equals("⬤"))
+//                this.flipPositions.add(new Position(row, col));
+//            if (getDiscAtPosition(new Position(row, col)).getType().equals("💣")) {
+//                this.flipPositions.add(new Position(row, col));
+//
+//            }
+//            count++;
+//        }
+//    }
 
     public boolean doesItFlip(Position a, int r, int c, Player p) {
         int row = a.row() + r, col = a.col() + c;
