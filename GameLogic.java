@@ -24,8 +24,6 @@ public class GameLogic implements PlayableLogic {
     public boolean locate_disc(Position a, Disc disc) {
         if (this.DiscBoard[a.row()][a.col()] != null || countFlips(a) < 1)
             return false;
-        if (a.row() == 5 && a.col() == 3)
-            System.out.println("this");
 
         saveGameState(getDiscBoard(this.DiscBoard), this.flipPositions);
 
@@ -49,7 +47,6 @@ public class GameLogic implements PlayableLogic {
         List<Position> positions = new ArrayList<>();
         for (int row = 0; row < BoardSize; row++) {
             for (int col = 0; col < BoardSize; col++) {
-                System.out.println(row + ", " + col);
                 if (DiscBoard[row][col] == null && countFlips(new Position(row, col)) > 0)
                     positions.add(new Position(row, col));
             }
@@ -67,13 +64,6 @@ public class GameLogic implements PlayableLogic {
     public int countFlips(Position a) {
         this.flipPositions = new ArrayList<>();
         int count = 0;
-
-        if (a.row() == 4 && a.col() == 2)
-            System.out.println("this");
-        if (a.row() == 2 && a.col() == 3)
-            System.out.println("this");
-        if (a.row() == 2 && a.col() == 4)
-            System.out.println("this");
 
         Player p;
         if (isFirstPlayerTurn())
@@ -158,7 +148,7 @@ public class GameLogic implements PlayableLogic {
 
     @Override
     public boolean isGameFinished() {
-        List<Position> pos= ValidMoves();
+        List<Position> pos = ValidMoves();
         if (pos.isEmpty()){
             if (isFirstPlayerTurn)
                 System.out.println("player 2 has won");
