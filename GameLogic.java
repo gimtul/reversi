@@ -30,13 +30,13 @@ public class GameLogic implements PlayableLogic {
 
         this.DiscBoard[a.row()][a.col()] = disc;
 
+        for (Position pos : this.flipPositions) {
+            this.DiscBoard[pos.row()][pos.col()].setOwner(getCurrentPlayer());
+        }
+
         for (Position pos : this.bombPositions) {
             if (!this.DiscBoard[pos.row()][pos.col()].getOwner().equals(getCurrentPlayer()))
                 bombFlips(pos);
-        }
-
-        for (Position pos : this.flipPositions) {
-            this.DiscBoard[pos.row()][pos.col()].setOwner(getCurrentPlayer());
         }
 
         this.isFirstPlayerTurn = !this.isFirstPlayerTurn;
@@ -94,6 +94,8 @@ public class GameLogic implements PlayableLogic {
             Flips(a, 1, 0, p);
         if (doesItFlip(a, 1, -1, p))
             Flips(a, 1, -1, p);
+
+        bombFlips(a);
 
         count += flipPositions.size();
 
@@ -162,15 +164,14 @@ public class GameLogic implements PlayableLogic {
         int row = a.row() + r, col = a.col() + c;
         if (outOfBound(new Position(row, col)))
             return false;
-        if (DiscBoard[row][col] == null)
+        if (this.DiscBoard[row][col] == null)
             return false;
-        if (DiscBoard[row][col].getType().equals("💣") && !DiscBoard[row][col].getOwner().equals(p)) {
+        if (!this.DiscBoard[row][col].getOwner().equals(p))
+            return false;
+        if (this.DiscBoard[row][col].getType().equals("💣")) {
             bombFlips(new Position(row, col));
-            return true;
         }
-        if (!DiscBoard[row][col].getOwner().equals(p))
-            return true;
-        return false;
+        return true;
     }
 
     public boolean doesItFlip(Position a, int r, int c, Player p) {
