@@ -10,9 +10,11 @@ public class GameLogic implements PlayableLogic {
     private final int BoardSize = getBoardSize();
     private Disc[][] DiscBoard = new Disc[BoardSize][BoardSize];
     private List<Position> flipPositions;
+    private List<Position> tempBombPositions;
     private List<Position> bombPositions;
     private int p1discs = 0;
     private int p2discs = 0;
+    private boolean counting;
 
 
     public GameLogic() {
@@ -72,6 +74,7 @@ public class GameLogic implements PlayableLogic {
     @Override
     public int countFlips(Position a) {
         this.flipPositions = new ArrayList<>();
+        this.tempBombPositions = new ArrayList<>();
         this.bombPositions = new ArrayList<>();
         int count = 0;
 
@@ -80,11 +83,6 @@ public class GameLogic implements PlayableLogic {
             p = this.player1;
         else
             p = this.player2;
-
-        if (a.row() == 2 && a.col() == 2)
-            System.out.println("hey");
-        if (a.row() == 3 && a.col() == 1)
-            System.out.println("hey");
 
         if (doesItFlip(a, 0, -1, p))
             Flips(a, 0, -1, p);
@@ -103,6 +101,10 @@ public class GameLogic implements PlayableLogic {
         if (doesItFlip(a, 1, -1, p))
             Flips(a, 1, -1, p);
 
+        this.counting = true;
+        initBombPositions(a, p);
+        this.counting = false;
+
         if (!bombPositions.isEmpty()) {
             for (Position pos : this.bombPositions) {
                 if (!this.DiscBoard[pos.row()][pos.col()].getOwner().equals(getCurrentPlayer()))
@@ -117,9 +119,6 @@ public class GameLogic implements PlayableLogic {
 
     public void Flips(Position a, int r, int c, Player p) {
 
-        if (a.row() == 3 && a.col() == 1)
-            System.out.println("hey");
-
         int count = 1, row, col;
 
         while (DiscBoard[a.row() + count*r][a.col() + count*c].getOwner() != p) {
@@ -128,8 +127,9 @@ public class GameLogic implements PlayableLogic {
             Position pos = new Position(row, col);
             if (getDiscAtPosition(new Position(row, col)).getType().equals("⬤"))
                 this.flipPositions.add(pos);
-            if (getDiscAtPosition(pos).getType().equals("💣")) {
+            if (getDiscAtPosition(new Position(row, col)).getType().equals("💣")) {
                 this.flipPositions.add(pos);
+                this.tempBombPositions.add(pos);
                 this.bombPositions.add(pos);
             }
             count++;
@@ -148,7 +148,6 @@ public class GameLogic implements PlayableLogic {
         else
             p = this.player2;
 
-        Position pos = new Position(row, col);
         if (bombDoesItFlip(a, 0, -1, p) && !posContains(new Position(row, col - 1)))
             this.flipPositions.add(new Position(row, col - 1));
         if (bombDoesItFlip(a, -1, -1, p) && !posContains(new Position(row - 1, col - 1)))
@@ -168,6 +167,10 @@ public class GameLogic implements PlayableLogic {
     }
 
     public boolean bombDoesItFlip(Position a, int r, int c, Player p) {
+
+        if (a.row() == 2 && a.col() == 2)
+            System.out.println("hey");
+
         int row = a.row() + r, col = a.col() + c;
         if (outOfBound(new Position(row, col)))
             return false;
@@ -178,19 +181,25 @@ public class GameLogic implements PlayableLogic {
         if (this.DiscBoard[row][col].getType().equals("⭕"))
             return false;
         Position pos = new Position(row, col);
-        if (bombPosContains(pos))
+        if (bombPosContains(new Position(row, col)))
             return false;
         if (this.DiscBoard[row][col].getType().equals("💣")) {
-//            if (counting)
-//                this.bombPositions.add(pos);
+            if (counting)
+                this.bombPositions.add(pos);
             bombFlips(new Position(row, col));
             return true;
         }
         return true;
     }
 
-    public void initBombPositions(Position a, int r, int c, Player p) {
-        bombDoesItFlip(a, r, c, p);
+    public void initBombPositions(Position a, Player p) {
+
+        if (!tempBombPositions.isEmpty()) {
+            for (Position pos : this.tempBombPositions) {
+                bombFlips(pos);
+            }
+        }
+
     }
 
     public boolean bombPosContains(Position a) {
@@ -257,20 +266,22 @@ public class GameLogic implements PlayableLogic {
         if (pos.isEmpty()){
             for (int i=0;i<BoardSize;i++){
                 for (int j=0;j<BoardSize;j++){
-                    if (DiscBoard[i][j].getOwner()==player1){
-                        p1discs++;
-                    }
-                    if (DiscBoard[i][j].getOwner()==player2){
-                        p2discs++;
+                    if (DiscBoard[i][j] != null) {
+                        if (DiscBoard[i][j].getOwner()==player1){
+                            p1discs++;
+                        }
+                        if (DiscBoard[i][j].getOwner()==player2){
+                            p2discs++;
+                        }
                     }
                 }
             }
             if (p1discs>p2discs){
-                System.out.println("Player 1 wins with "+ p1discs+" discs! Player 2" + "had " +p2discs+ " discs.");
+                System.out.println("Player 1 wins with "+ p1discs+" discs! Player 2 " + "had " +p2discs+ " discs.");
                 player1.addWin();
             }
             if (p1discs<p2discs){
-                System.out.println("Player 2 wins with "+ p2discs+" discs! Player 1" + "had " +p1discs+ " discs.");
+                System.out.println("Player 2 wins with "+ p2discs+" discs! Player 1 " + "had " +p1discs+ " discs.");
                 player2.addWin();
             }
             return  true;

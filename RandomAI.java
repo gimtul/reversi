@@ -16,7 +16,7 @@ public class RandomAI extends AIPlayer {
         this.bombcount=getNumber_of_bombs();
         this.unflipcount=getNumber_of_unflippedable();
         Random random = new Random();
-        int discrandom= random.nextInt(2);
+        int discrandom= random.nextInt(3);
         int posrandom= random.nextInt(pos.size());
         Player currentPlayer = isPlayerOne() ? gameStatus.getFirstPlayer() : gameStatus.getSecondPlayer();
         Position randpos=pos.get(posrandom);
