@@ -5,6 +5,10 @@ import java.util.Stack;
 public class GameLogic implements PlayableLogic {
     private Stack<Disc[][]> gameHistory = new Stack<>();
     private Stack<List<Position>> flipPositionsHistory = new Stack<>();
+    private Stack<Integer> p1unflipcount=new Stack<>();
+    private Stack<Integer> p2unflipcount=new Stack<>();
+    private Stack<Integer> p1bombcount=new Stack<>();
+    private Stack<Integer> p2bombcount=new Stack<>();
     private boolean isFirstPlayerTurn = true;
     private Player player1, player2;
     private final int BoardSize = getBoardSize();
@@ -21,9 +25,13 @@ public class GameLogic implements PlayableLogic {
         super();
     }
 
-    private void saveGameState(Disc[][] discBoard, List<Position> flipPositions) {
+    private void saveGameState(Disc[][] discBoard, List<Position> flipPositions, int p1bomb, int p2bomb, int p1unflip, int p2unflip) {
         this.gameHistory.push(getDiscBoard(discBoard));
         this.flipPositionsHistory.push(flipPositions);
+        this.p1unflipcount.push(p1unflip);
+        this.p2unflipcount.push(p2unflip);
+        this.p1bombcount.push(p1bomb);
+        this.p2bombcount.push(p2bomb);
     }
 
     @Override
@@ -31,9 +39,21 @@ public class GameLogic implements PlayableLogic {
         if (this.DiscBoard[a.row()][a.col()] != null || countFlips(a) < 1)
             return false;
 
-        saveGameState(getDiscBoard(this.DiscBoard), this.flipPositions);
+        if ((disc.getType().equals("💣"))&&getCurrentPlayer().getNumber_of_bombs()<1)
+            return false;
+
+        if ((disc.getType().equals("⭕"))&&getCurrentPlayer().getNumber_of_unflippedable()<1)
+            return false;
+
+        saveGameState(getDiscBoard(this.DiscBoard), this.flipPositions, this.player1.number_of_bombs, this.player2.number_of_bombs, this.player1.number_of_unflippedable, this.player2.number_of_unflippedable);
 
         this.DiscBoard[a.row()][a.col()] = disc;
+
+        if (disc.getType().equals("💣"))
+            getCurrentPlayer().reduce_bomb();
+
+        if (disc.getType().equals("⭕"))
+            getCurrentPlayer().reduce_unflippedable();
 
         for (Position pos : this.bombPositions) {
             if (!this.DiscBoard[pos.row()][pos.col()].getOwner().equals(getCurrentPlayer()))
@@ -167,10 +187,6 @@ public class GameLogic implements PlayableLogic {
     }
 
     public boolean bombDoesItFlip(Position a, int r, int c, Player p) {
-
-        if (a.row() == 2 && a.col() == 2)
-            System.out.println("hey");
-
         int row = a.row() + r, col = a.col() + c;
         if (outOfBound(new Position(row, col)))
             return false;
@@ -308,7 +324,8 @@ public class GameLogic implements PlayableLogic {
                 DiscBoard[row][col] = null;
             }
         }
-
+        player1.reset_bombs_and_unflippedable();
+        player2.reset_bombs_and_unflippedable();
         __init__();
 
     }
@@ -322,6 +339,10 @@ public class GameLogic implements PlayableLogic {
                     this.DiscBoard[pos.row()][pos.col()].setOwner(getCurrentPlayer());
                 }
                 this.isFirstPlayerTurn = !this.isFirstPlayerTurn;
+                player1.setNumber_of_bombs(this.p1bombcount.pop());
+                player1.setNumber_of_unflippedable(this.p1unflipcount.pop());
+                player2.setNumber_of_bombs(this.p2bombcount.pop());
+                player2.setNumber_of_unflippedable(this.p2unflipcount.pop());
             } else {
                 System.out.println("No moves to undo.");
             }
