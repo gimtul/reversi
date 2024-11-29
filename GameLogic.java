@@ -11,6 +11,8 @@ public class GameLogic implements PlayableLogic {
     private Disc[][] DiscBoard = new Disc[BoardSize][BoardSize];
     private List<Position> flipPositions;
     private List<Position> bombPositions;
+    private int p1discs=0;
+    private int p2discs=0;
 
     public GameLogic() {
         super();
@@ -220,10 +222,24 @@ public class GameLogic implements PlayableLogic {
     public boolean isGameFinished() {
         List<Position> pos = ValidMoves();
         if (pos.isEmpty()){
-            if (isFirstPlayerTurn)
-                System.out.println("player 2 has won");
-            else
-                System.out.println(("player 1 has won"));
+            for (int i=0;i<BoardSize;i++){
+                for (int j=0;j<BoardSize;j++){
+                    if (DiscBoard[i][j].getOwner()==player1){
+                        p1discs++;
+                    }
+                    if (DiscBoard[i][j].getOwner()==player2){
+                        p2discs++;
+                    }
+                }
+            }
+            if (p1discs>p2discs){
+                System.out.println("Player 1 wins with "+ p1discs+" discs! Player 2" + "had " +p2discs+ " discs.");
+                player1.addWin();
+            }
+            if (p1discs<p2discs){
+                System.out.println("Player 2 wins with "+ p2discs+" discs! Player 1" + "had " +p1discs+ " discs.");
+                player2.addWin();
+            }
             return  true;
         }
         return false;
@@ -252,14 +268,16 @@ public class GameLogic implements PlayableLogic {
 
     @Override
     public void undoLastMove() {
-        if (!this.gameHistory.isEmpty()) {
-            this.DiscBoard = this.gameHistory.pop();
-            for (Position pos : this.flipPositionsHistory.pop()) {
-                this.DiscBoard[pos.row()][pos.col()].setOwner(getCurrentPlayer());
+        if (!(player1 instanceof AIPlayer) && !(player2 instanceof AIPlayer)) {
+            if (!this.gameHistory.isEmpty()) {
+                this.DiscBoard = this.gameHistory.pop();
+                for (Position pos : this.flipPositionsHistory.pop()) {
+                    this.DiscBoard[pos.row()][pos.col()].setOwner(getCurrentPlayer());
+                }
+                this.isFirstPlayerTurn = !this.isFirstPlayerTurn;
+            } else {
+                System.out.println("No moves to undo.");
             }
-            this.isFirstPlayerTurn = !this.isFirstPlayerTurn;
-        } else {
-            System.out.println("No moves to undo.");
         }
     }
     public Disc[][] getDiscBoard(Disc[][] discBoard) {
