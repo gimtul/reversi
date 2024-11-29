@@ -74,7 +74,6 @@ public class GameLogic implements PlayableLogic {
         this.flipPositions = new ArrayList<>();
         this.bombPositions = new ArrayList<>();
         int count = 0;
-        this.counting = true;
 
         Player p;
         if (isFirstPlayerTurn())
@@ -113,7 +112,6 @@ public class GameLogic implements PlayableLogic {
 
         count += this.flipPositions.size();
 
-        this.counting = false;
         return count;
     }
 
