@@ -25,6 +25,7 @@ public class GameLogic implements PlayableLogic {
         super();
     }
 
+    /**saves the current game, including discs on board, bomb and unflippedable count and the flipped discs**/
     private void saveGameState(Disc[][] discBoard, List<Position> flipPositions, int p1bomb, int p2bomb, int p1unflip, int p2unflip) {
         this.gameHistory.push(getDiscBoard(discBoard));
         this.flipPositionsHistory.push(flipPositions);
@@ -79,11 +80,13 @@ public class GameLogic implements PlayableLogic {
         return true;
     }
 
+    /**returns the length and width of the board**/
     @Override
     public int getBoardSize() {
         return 8;
     }
 
+    /**checks and returns a list of valid moves the player can make **/
     @Override
     public List<Position> ValidMoves() {
         List<Position> positions = new ArrayList<>();
@@ -96,6 +99,7 @@ public class GameLogic implements PlayableLogic {
         return positions;
     }
 
+    /**checks if the specified position is inside the board**/
     public boolean outOfBound(Position a) {
         if (a.row() == -1 || a.row() == getBoardSize() || a.col() == -1 || a.col() == getBoardSize())
             return true;
@@ -167,9 +171,6 @@ public class GameLogic implements PlayableLogic {
         }
     }
 
-    /**
-     * not done
-     **/
     public void bombFlips(Position a) {
         int row = a.row(), col = a.col();
 
@@ -229,6 +230,7 @@ public class GameLogic implements PlayableLogic {
 
     }
 
+    /**checks if there is a bomb that has already been exploded in the specified position**/
     public boolean bombPosContains(Position a) {
         for (Position pos : this.bombPositions) {
             if (pos.row() == a.row() && pos.col() == a.col())
@@ -245,6 +247,7 @@ public class GameLogic implements PlayableLogic {
         return false;
     }
 
+    /**checks if the given disc can be flipped**/
     public boolean doesItFlip(Position a, int r, int c, Player p) {
         int row = a.row() + r, col = a.col() + c;
         if (outOfBound(new Position(row, col)))
@@ -255,38 +258,47 @@ public class GameLogic implements PlayableLogic {
             return true;
         return doesItFlip(new Position(row, col), r, c, p);
     }
+
+    /**returns the disc at the specified position on the board**/
     @Override
     public Disc getDiscAtPosition(Position position) {
         return this.DiscBoard[position.row()][position.col()];
     }
 
+    /**returns the first player**/
     @Override
     public Player getFirstPlayer() {
         return this.player1;
     }
 
+    /**returns the second player**/
     @Override
     public Player getSecondPlayer() {
         return this.player2;
     }
 
+    /**sets the type of players**/
     @Override
     public void setPlayers(Player player1, Player player2) {
         this.player1 = player1;
         this.player2 = player2;
     }
 
+    /**checks if it is the first player's turn**/
     @Override
     public boolean isFirstPlayerTurn() {
         return isFirstPlayerTurn;
     }
 
+    /**returns the current player playing**/
     public Player getCurrentPlayer() {
         if (isFirstPlayerTurn())
             return getFirstPlayer();
         return getSecondPlayer();
     }
 
+    /**checks if the game is finished by checking if the current player has valid moves to make,
+     if not the methode counts the amount of discs each player has and the player with the biggest amount of discs wins. and gets a win point**/
     @Override
     public boolean isGameFinished() {
         List<Position> pos = ValidMoves();
@@ -316,6 +328,7 @@ public class GameLogic implements PlayableLogic {
         return false;
     }
 
+    /**the default starting position**/
     public void __init__ () {
         DiscBoard[3][4]= new SimpleDisc(player2);
         DiscBoard[4][4]= new SimpleDisc(player1);
@@ -328,6 +341,7 @@ public class GameLogic implements PlayableLogic {
         this.p2discs = 0;
     }
 
+    /**resets the game by reseting the bomb and unflippedables count, and calling the default board starting position**/
     @Override
     public void reset() {
         for (int row = 0; row < BoardSize; row++) {
@@ -341,6 +355,7 @@ public class GameLogic implements PlayableLogic {
 
     }
 
+    /**undoes the last move by accessing a save of the board before the last move, while printing the removed and the flipped disks**/
     @Override
     public void undoLastMove() {
         System.out.println("undoing last move:");
@@ -370,6 +385,8 @@ public class GameLogic implements PlayableLogic {
         }
         System.out.println("\n");
     }
+
+    /**copies the current board and returns the copy**/
     public Disc[][] getDiscBoard(Disc[][] discBoard) {
         Disc[][] copyBoard = new Disc[BoardSize][BoardSize];
         for (int row = 0; row <BoardSize; row++){
