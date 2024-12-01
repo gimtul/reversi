@@ -60,11 +60,22 @@ public class GameLogic implements PlayableLogic {
                 bombFlips(pos);
         }
 
+        if (getCurrentPlayer()==player1)
+            System.out.println("Payer 1 placed a "+disc.getType()+" in ("+a.row()+","+a.col()+")");
+        else
+            System.out.println("Payer 2 placed a "+disc.getType()+" in ("+a.row()+","+a.col()+")");
+
+
         for (Position pos : this.flipPositions) {
             this.DiscBoard[pos.row()][pos.col()].setOwner(getCurrentPlayer());
+            if (getCurrentPlayer()==player1)
+                System.out.println("Player 1 flipped the "+this.DiscBoard[pos.row()][pos.col()].getType()+"in ("+pos.row()+","+pos.col()+")");
+            else
+                System.out.println("Player 2 flipped the "+this.DiscBoard[pos.row()][pos.col()].getType()+"in ("+pos.row()+","+pos.col()+")");
         }
 
         this.isFirstPlayerTurn = !this.isFirstPlayerTurn;
+        System.out.println("\n");
         return true;
     }
 
@@ -332,11 +343,21 @@ public class GameLogic implements PlayableLogic {
 
     @Override
     public void undoLastMove() {
+        System.out.println("undoing last move:");
         if (!(player1 instanceof AIPlayer) && !(player2 instanceof AIPlayer)) {
             if (!this.gameHistory.isEmpty()) {
+                Disc[][] oldboard=getDiscBoard(this.DiscBoard);
                 this.DiscBoard = this.gameHistory.pop();
+                for (int i=0;i<BoardSize;i++){
+                    for(int j=0;j<BoardSize;j++){
+                        if (oldboard[i][j]!=null&&this.DiscBoard[i][j]==null){
+                            System.out.println("\tUndo: removing "+oldboard[i][j].getType()+" from ("+i+","+j+")");
+                        }
+                    }
+                }
                 for (Position pos : this.flipPositionsHistory.pop()) {
                     this.DiscBoard[pos.row()][pos.col()].setOwner(getCurrentPlayer());
+                    System.out.println("\tUndo: flipping back "+this.DiscBoard[pos.row()][pos.col()].getType()+" in ("+pos.row()+","+pos.col()+")");
                 }
                 this.isFirstPlayerTurn = !this.isFirstPlayerTurn;
                 player1.setNumber_of_bombs(this.p1bombcount.pop());
@@ -344,9 +365,10 @@ public class GameLogic implements PlayableLogic {
                 player2.setNumber_of_bombs(this.p2bombcount.pop());
                 player2.setNumber_of_unflippedable(this.p2unflipcount.pop());
             } else {
-                System.out.println("No moves to undo.");
+                System.out.println("\tNo: No previous move available to undo.");
             }
         }
+        System.out.println("\n");
     }
     public Disc[][] getDiscBoard(Disc[][] discBoard) {
         Disc[][] copyBoard = new Disc[BoardSize][BoardSize];
